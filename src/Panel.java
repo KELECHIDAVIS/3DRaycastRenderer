@@ -87,6 +87,21 @@ public class Panel extends GamePanel{
                 player.vY=0;
                 player.vY=player.speed;
                 break;
+            case KeyEvent.VK_LEFT:
+                player.angle-=4;
+                if(player.angle<=-360)
+                {
+                    player.angle+=360;
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                player.angle+=4;
+                if(player.angle>=360)
+                {
+                    player.angle-=360;
+                }
+                break;
+
 
         }
 
@@ -109,6 +124,7 @@ public class Panel extends GamePanel{
             case KeyEvent.VK_S:
                 player.vY=0;
                 break;
+
 
         }
     }
