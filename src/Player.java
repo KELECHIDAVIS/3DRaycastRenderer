@@ -5,38 +5,35 @@ public class Player  {
 
     double x , y ;int  size;
     int angle =0; // in deg;
-    double vX=0, vY=0, speed=0.00002, cap=2;
-     int gunLength=15; // make gun a line so it is easier to change angle ;first quad i think x+a, y-a;\
-    int gunX, gunY;
-    ArrayList<Rectangle> obstacles = new ArrayList<>();
-    public Player(int x, int y , int size, int[][] grid)
+    double vX=0, vY=0, speed=.2, cap=2;
+    //range for fov
+    int fov =15;
+
+     ArrayList<Ray> rays = new ArrayList<>();
+
+    public Player(int x, int y , int size)
     {
         this.x = x;
         this.y = y ;
-        gunX = x +size/2;
-        gunY = y  +size/2;
-        this.size = size;
-        for(int i =0; i<grid.length; i++  )
+        for(int i =angle-fov; i<angle+fov; i++)
         {
-            for(int j =0; j<grid[i].length; j++)
-            {
-                if(grid[i][j]==1) // obstacle
-                {
-
-                  obstacles.add(new Rectangle(j*Panel.boxSize,i*Panel.boxSize,Panel.boxSize,Panel.boxSize));
-                }
-            }
+            Ray ray = new Ray(x,y, i);
+            rays.add(ray);
         }
+
+
+        this.size = size;
+
 
     }
 
-    public void drawGun(Graphics2D g)
+    /*public void drawGun(Graphics2D g)
     {
 
         int finalX = (int)(gunX+(gunLength*Math.cos(Math.toRadians(angle))));
         int finalY = (int)(gunY+(gunLength*Math.sin(Math.toRadians(angle)))); // y might have to be minus
         g.drawLine(gunX,gunY,finalX,finalY);
-    }
+    }*/
 
 
 
@@ -48,8 +45,29 @@ public class Player  {
 
         g.setStroke(new BasicStroke(3));
 
-        drawGun(g);
-        g.setStroke(new BasicStroke(1));
+        /*drawGun(g);*/
+        for(int j =0; j<rays.size(); j++)
+        {
+            rays.get(j).draw(g);
+
+        }
+
+       //walls
+        for(int i =0; i<Panel.walls.size(); i++)
+        {
+            for(int j =0; j<rays.size(); j++)
+            {
+
+                Vector point = rays.get(i).cast(Panel.walls.get(i));
+                if(point!=null)
+                    g.drawLine((int)rays.get(i).pos.x,(int)rays.get(i).pos.y,(int)point.x, (int)point.y);
+
+            }
+
+
+        }
+
+
 
 
 
@@ -62,50 +80,38 @@ public class Player  {
         // if hitting a wall stop the movement in that direction
 
 
-            // x
-            for(int i =0; i<obstacles.size(); i++)
+
+            if(x>=512-size)
             {
-                if(obstacles.get(i).intersects(getBounds()))
-                {
-                    Rectangle rect = getBounds();
-                    if(rect.x<obstacles.get(i).x)
-                    {
-                        // right side
-                        vX=0;
-                        x-=1;
-
-                    }
-                    if(rect.x>obstacles.get(i).x)
-                    {
-                        // right side
-                        vX=0;
-                        x+=1;
-
-                    }
-                    if(rect.y<obstacles.get(i).y)
-                    {
-                        // right side
-                        vY=0;
-                        y-=1;
-
-                    }
-                    if(rect.y>obstacles.get(i).y)
-                    {
-                        // right side
-                        y+=1;
-                        vY=0;
-                    }
-                }
+                x=512-size;
             }
 
+            if(x<0)
+            {
+                x = 0;
+            }
 
-            x+=vX;
+        if(y>=512-size)
+        {
+            y=512-size;
+        }
 
-            y+=vY;
+        if(y<0)
+        {
+            y = 0;
+        }
 
-            gunX = (int) (x +size/2);
+        x+=vX*Panel.dt;
 
-            gunY = (int) (y  +size/2);
+            y+=vY*Panel.dt;
+            for(int i =0; i<rays.size(); i++)
+            {
+                rays.set(i,new Ray((int)(x+size/2.0),(int)(y+size/2.0),angle));
+            }
+
+            /*gunX = (int) (x +size/2);
+
+            gunY = (int) (y  +size/2);*/
 
 
     }
