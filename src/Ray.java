@@ -5,10 +5,10 @@ public class Ray   {
     Vector pos;
     Vector dir;
     int angle ;
-    Ray(int x , int y   , int angle)
+    Ray(Vector pos , int angle)
     {
         this.angle = angle ;
-        pos  = new Vector(x, y );
+        this.pos  = pos;
         this.dir = new Vector(Math.cos(Math.toRadians(angle)),Math.sin(Math.toRadians(angle)));
     }
 
@@ -16,12 +16,18 @@ public class Ray   {
     {
         g.setColor(Color.white);
         // translate
+        this.dir = new Vector(Math.cos(Math.toRadians(angle)),Math.sin(Math.toRadians(angle)));
+
         g.drawLine((int)pos.x,(int)pos.y,(int)((pos.x+dir.x*10)), (int)(pos.y+dir.y*10));
+        g.setStroke(new BasicStroke(1));
+
     }
 
     static double dist(Vector first , Vector second)
     {
-        return Math.sqrt(Math.pow(2,(second.x-first.x))+(Math.pow(2,(second.y-first.y))));
+        double dX = (second.x-first.x);
+        double dY = (second.y-first.y);
+        return Math.sqrt(Math.pow(dX,2)+Math.pow(dY,2));
 
     }
 
